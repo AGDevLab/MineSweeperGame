@@ -16,6 +16,7 @@ var gGame = {
   shownCount: 0,
   markedCount: 0,
   secsPassed: 0,
+  score: 0,
 }
 
 /* The Model:
@@ -98,8 +99,27 @@ function buildBoard() {
       // }
     }
   }
+  // console.log(board[0][3])
+
   board[0][3].isMine = true
   board[3][0].isMine = true
+  board[2][0].isMine = true
+
+  // random mines
+  // for (var i = 0; i < gLevel.MINES; i++) {
+  //   var randCoordI = 0
+  //   var randCoordJ = 0
+  //   var randMineLoc
+  //   randCoordI = getRandomInt(0, gLevel.SIZE)
+  //   randCoordJ = getRandomInt(0, gLevel.SIZE)
+  //   // for (var j = 0; j < 2; j++) {}
+  //   console.log(randCoordI, randCoordJ)
+  //   // console.log(randCoord)
+  //   randMineLoc = board[randCoordI][randCoordJ]
+  //   // console.log(randMineLoc)
+
+  //   randMineLoc.isMine = true
+  // }
 
   return board
 }
@@ -183,21 +203,25 @@ function onCellClicked(elCell, cellI, cellJ) {
 
   if (!clickedCell.isMine) {
     console.log(clickedCell.minesAroundCount)
+    if (cellSpan.classList.contains('hidden')) {
+      cellSpan.classList.remove('hidden')
+      clickedCell.isShown = true
+    }
   }
-
-  if (cellSpan.classList.contains('hidden')) {
-    cellSpan.classList.remove('hidden')
-  }
+  console.log(clickedCell)
 
   // console.log('elCell:', elCell)
-  if (elCell.innerText === '0') {
-    console.log('innerText 0')
+  if (clickedCell.isMine && !clickedCell.isShown) {
+    clickedCell.isShown = true
+    console.log('mine')
+
+    gGame.score--
+    document.querySelector('h2 span').innerText = gGame.score
 
     // if (elCell.classList.contains('occupied')) {
     // if (gBoard[cellI][cellJ] === LIFE) {
 
     //   // Update the Model:
-    gBoard[cellI][cellJ].isShown = true
 
     //   // Update the Dom:
     // elCell.innerText = ''
@@ -244,3 +268,15 @@ function createMat(ROWS, COLS) {
 //   const cell = cell.querySelector('span')
 //   cell.classList.remove('hidden')
 // }
+
+function getRandomIntInclusive(min, max) {
+  const minCeiled = Math.ceil(min)
+  const maxFloored = Math.floor(max)
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled) // The maximum is inclusive and the minimum is inclusive
+}
+
+function getRandomInt(min, max) {
+  const minCeiled = Math.ceil(min)
+  const maxFloored = Math.floor(max)
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled) // The maximum is exclusive and the minimum is inclusive
+}
