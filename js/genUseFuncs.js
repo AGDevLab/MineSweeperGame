@@ -1,0 +1,39 @@
+function createMat(ROWS, COLS) {
+  const mat = []
+  for (var i = 0; i < ROWS; i++) {
+    const row = []
+    for (var j = 0; j < COLS; j++) {
+      row.push('')
+    }
+    mat.push(row)
+  }
+  return mat
+}
+
+function getRandomIntInclusive(min, max) {
+  const minCeiled = Math.ceil(min)
+  const maxFloored = Math.floor(max)
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled) // The maximum is inclusive and the minimum is inclusive
+}
+
+function getRandomInt(min, max) {
+  const minCeiled = Math.ceil(min)
+  const maxFloored = Math.floor(max)
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled) // The maximum is exclusive and the minimum is inclusive
+}
+
+// Convert a location object {i, j} to a selector and render a value in that element
+function renderCell(location, value) {
+  const cellSelector = '.' + getClassName(location) // '.cell-1-1'
+  const elCell = document.querySelector(cellSelector) // <td></td>
+  elCell.innerHTML = value
+} // to be used later
+
+// Gets a string such as:  'cell-2-7' and returns {i:2, j:7}
+function getCellCoord(strCellId) {
+  const coord = {}
+  const parts = strCellId.split('-') // ['cell','2','7']
+  coord.i = +parts[1]
+  coord.j = +parts[2]
+  return coord
+}

@@ -70,6 +70,9 @@ function onInit() {
   gBoard = buildBoard()
   console.log('gBoard', gBoard)
   renderBoard(gBoard)
+  document.querySelector('h2 span').innerText = 0
+  gGame.score = 0
+  gGame.markedCount = 0
 }
 
 // Builds the board Set the mines Call setMinesNegsCount() Return the created board
@@ -82,44 +85,15 @@ function buildBoard() {
         minesAroundCount: numOfNegMines,
         isShown: false,
         isMine: false,
-        isMarked: true,
+        isMarked: false,
       }
-      // if (
-      //   i === 0 ||
-      //   i === board.length - 1 ||
-      //   j === 0 ||
-      //   j === board[0].length - 1
-      // )
-      // if (
-      //   (i === 0 && j === board.length - 1) ||
-      //   (i === 1 && j === board.length - 1) ||
-      //   (j === 0 && i === board[0].length - 1)
-      // ) {
-      // board[i][j].isMine = true
-      // }
     }
   }
-  // console.log(board[0][3])
 
-  board[0][3].isMine = true
   board[3][0].isMine = true
   board[2][0].isMine = true
 
-  // random mines
-  // for (var i = 0; i < gLevel.MINES; i++) {
-  //   var randCoordI = 0
-  //   var randCoordJ = 0
-  //   var randMineLoc
-  //   randCoordI = getRandomInt(0, gLevel.SIZE)
-  //   randCoordJ = getRandomInt(0, gLevel.SIZE)
-  //   // for (var j = 0; j < 2; j++) {}
-  //   console.log(randCoordI, randCoordJ)
-  //   // console.log(randCoord)
-  //   randMineLoc = board[randCoordI][randCoordJ]
-  //   // console.log(randMineLoc)
-
-  //   randMineLoc.isMine = true
-  // }
+  // addMine(board, gLevel.MINES)
 
   return board
 }
@@ -133,14 +107,14 @@ function renderBoard(board) {
       const currCell = board[i][j]
       numOfNegMines = setMinesNegsCount(i, j, board)
       currCell.minesAroundCount = numOfNegMines
-      // console.log(currCell, numOfNegMines)
+      const tdId = `cell-${i}-${j}`
 
       var cellClass = getClassName({ i: i, j: j }) // cell-i-j
 
       if (currCell.isMine) cellClass += ' mine'
       // else if (currCell.type === WALL) cellClass += ' wall'
 
-      strHTML += `<td class="cell ${cellClass}" onclick="onCellClicked(this,${i},${j})" ><span class="hidden">`
+      strHTML += `<td id="${tdId}" class="cell ${cellClass}" onclick="onCellClicked(this,${i},${j})" oncontextmenu="onCellMarked(event, this); return false;"><span class="hidden">`
 
       if (currCell.isMine) {
         strHTML += MINE
@@ -157,52 +131,20 @@ function renderBoard(board) {
   elBoard.innerHTML = strHTML
 }
 
-// Convert a location object {i, j} to a selector and render a value in that element
-function renderCell(location, value) {
-  const cellSelector = '.' + getClassName(location) // '.cell-1-1'
-  const elCell = document.querySelector(cellSelector) // <td></td>
-  elCell.innerHTML = value
-} // to be used later
-
 // Returns the class name for a specific cell
 function getClassName(location) {
   const cellClass = 'cell-' + location.i + '-' + location.j
   return cellClass
 } // step1.3 done
 
-function setMinesNegsCount(cellI, cellJ, board) {
-  // 7,0
-  var minesCount = 0
-  for (var i = cellI - 1; i <= cellI + 1; i++) {
-    if (i < 0 || i >= board.length) continue
-    for (var j = cellJ - 1; j <= cellJ + 1; j++) {
-      const currCell = board[i][j]
-
-      if (j < 0 || j >= board[i].length) continue
-      if (i === cellI && j === cellJ) continue
-
-      if (currCell.isMine) {
-        minesCount++
-      }
-    }
-  }
-  return minesCount
-}
-
-// ---- to be finished... only basic functionality working
-// TODO: Called when a cell is clicked
+// Called when a cell is clicked
 function onCellClicked(elCell, cellI, cellJ) {
   console.log(elCell)
-  // console.log(cellI)
-  // console.log(cellJ)
-  // console.log(elCell.innerText)
   var clickedCell = gBoard[cellI][cellJ]
-  console.log(clickedCell)
-
   var cellSpan = elCell.querySelector('span')
 
   if (!clickedCell.isMine) {
-    console.log(clickedCell.minesAroundCount)
+    // console.log(clickedCell.minesAroundCount)
     if (cellSpan.classList.contains('hidden')) {
       cellSpan.classList.remove('hidden')
       clickedCell.isShown = true
@@ -210,7 +152,6 @@ function onCellClicked(elCell, cellI, cellJ) {
   }
   console.log(clickedCell)
 
-  // console.log('elCell:', elCell)
   if (clickedCell.isMine && !clickedCell.isShown) {
     clickedCell.isShown = true
     console.log('mine')
@@ -231,8 +172,17 @@ function onCellClicked(elCell, cellI, cellJ) {
   }
 }
 
-// TODO: Called when a cell is rightclicked See how you can hide the context menu on right click
-function onCellMarked(elCell) {}
+// Called when a cell is rightclicked See how you can hide the context menu on right click
+function onCellMarked(event, elCell) {
+  event.preventDefault()
+  const cellCoord = getCellCoord(elCell.id)
+  if (gGame.markedCount < 4) {
+    gBoard[cellCoord.i][cellCoord.j].isMarked = true
+    console.log('marked', elCell, gBoard[cellCoord.i][cellCoord.j])
+    elCell.innerText = 'M'
+    gGame.markedCount++
+  }
+}
 
 // TODO: Game ends when all mines are marked, and all the other cells are shown
 function checkGameOver() {}
@@ -246,37 +196,3 @@ at the Bonuses section below)
 */
 // TODO:
 function expandShown(board, elCell, i, j) {}
-
-function createMat(ROWS, COLS) {
-  const mat = []
-  for (var i = 0; i < ROWS; i++) {
-    const row = []
-    for (var j = 0; j < COLS; j++) {
-      row.push('')
-    }
-    mat.push(row)
-  }
-  return mat
-}
-
-// function hideCell(cell) {
-//   const cell = cell.querySelector('span')
-//   cell.classList.add('hidden')
-// }
-
-// function showCell() {
-//   const cell = cell.querySelector('span')
-//   cell.classList.remove('hidden')
-// }
-
-function getRandomIntInclusive(min, max) {
-  const minCeiled = Math.ceil(min)
-  const maxFloored = Math.floor(max)
-  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled) // The maximum is inclusive and the minimum is inclusive
-}
-
-function getRandomInt(min, max) {
-  const minCeiled = Math.ceil(min)
-  const maxFloored = Math.floor(max)
-  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled) // The maximum is exclusive and the minimum is inclusive
-}
