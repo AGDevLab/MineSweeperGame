@@ -1,2 +1,2 @@
 # MineSweeperGame
-MineSweeper Project
+Javascript Exercise Project - MineSweeper 
