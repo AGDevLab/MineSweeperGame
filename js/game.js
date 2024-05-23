@@ -118,7 +118,7 @@ function renderBoard(board) {
 
       if (currCell.isMine) {
         strHTML += MINE
-      } else if (!currCell.mine) {
+      } else if (!currCell.mine && currCell.minesAroundCount) {
         strHTML += currCell.minesAroundCount
       }
 
@@ -142,6 +142,11 @@ function onCellClicked(elCell, cellI, cellJ) {
   console.log(elCell)
   var clickedCell = gBoard[cellI][cellJ]
   var cellSpan = elCell.querySelector('span')
+
+  if (!cellSpan) {
+    console.error('cellSpan is null:', elCell)
+    return // Exit the function if cellSpan is null to avoid errors
+  }
 
   if (!clickedCell.isMine) {
     // console.log(clickedCell.minesAroundCount)
@@ -175,12 +180,41 @@ function onCellClicked(elCell, cellI, cellJ) {
 // Called when a cell is rightclicked See how you can hide the context menu on right click
 function onCellMarked(event, elCell) {
   event.preventDefault()
+  console.log(elCell)
+
   const cellCoord = getCellCoord(elCell.id)
-  if (gGame.markedCount < 4) {
-    gBoard[cellCoord.i][cellCoord.j].isMarked = true
-    console.log('marked', elCell, gBoard[cellCoord.i][cellCoord.j])
-    elCell.innerText = 'M'
-    gGame.markedCount++
+  var currCell = gBoard[cellCoord.i][cellCoord.j]
+  var elSpan = elCell.querySelector('span')
+  // console.log(+elSpan.innerHTML)
+  // console.log(elSpan.innerHTML)
+  console.log(elSpan.textContent)
+  // console.log(elCell.innerHTML)
+  // console.log(elCell.textContent)
+  console.log(elCell)
+
+  if (!currCell.isShown) {
+    // console.log('Cell innerText before marking:', elCell.innerText)
+
+    if (!currCell.isMarked) {
+      if (gGame.markedCount < 4) {
+        currCell.isMarked = true
+        console.log('marked', elSpan, gBoard[cellCoord.i][cellCoord.j])
+        elSpan.textContent = 'M'
+        elSpan.classList.remove('hidden')
+        console.log(elCell)
+
+        gGame.markedCount++
+      }
+    } else {
+      currCell.isMarked = false
+      elSpan.textContent = currCell.minesAroundCount
+      elSpan.classList.add('hidden')
+      // ? (elSpan.innerHTML = '')
+      // : (elSpan.innerText = currCell.minesAroundCount)
+
+      console.log('unmarked', elSpan, gBoard[cellCoord.i][cellCoord.j])
+      gGame.markedCount--
+    }
   }
 }
 

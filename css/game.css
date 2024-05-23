@@ -47,3 +47,9 @@ td span {
 .hidden {
   visibility: hidden;
 }
+
+.marked {
+  /* display: ;
+  background-color: aqua;
+  color: red; */
+}
