@@ -1,0 +1,49 @@
+* {
+  box-sizing: border-box;
+  margin: auto;
+}
+
+h1 {
+  color: blue;
+}
+
+body {
+  /* background-color: black; */
+  color: black;
+  text-align: center;
+}
+
+.board-container td {
+  border: 1px solid black;
+  background-color: white;
+
+  width: 40px;
+  height: 40px;
+  font-size: 1.5em;
+  cursor: pointer;
+  text-align: center;
+}
+
+.cell {
+  font-size: 1.5em;
+  width: 2em;
+  height: 2em;
+}
+
+td {
+  color: black;
+
+  text-align: center;
+  vertical-align: bottom;
+}
+
+td span {
+  font-weight: bold;
+  /* visibility: hidden; */
+  /* font-weight: 900; */
+  /* height: 50px; */
+}
+
+.hidden {
+  visibility: hidden;
+}
