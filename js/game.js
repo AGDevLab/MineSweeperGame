@@ -120,7 +120,7 @@ function renderBoard(board) {
       if (currCell.isMine) cellClass += ' mine'
       // else if (currCell.type === WALL) cellClass += ' wall'
 
-      strHTML += `<td class="cell ${cellClass}" onclick="onCellClicked(this,${i},${j})" ><span>`
+      strHTML += `<td class="cell ${cellClass}" onclick="onCellClicked(this,${i},${j})" ><span class="hidden">`
 
       if (currCell.isMine) {
         strHTML += MINE
@@ -173,10 +173,26 @@ function setMinesNegsCount(cellI, cellJ, board) {
 // TODO: Called when a cell is clicked
 function onCellClicked(elCell, cellI, cellJ) {
   console.log(elCell)
-  console.log(elCell.innerText)
+  // console.log(cellI)
+  // console.log(cellJ)
+  // console.log(elCell.innerText)
+  var clickedCell = gBoard[cellI][cellJ]
+  console.log(clickedCell)
+
+  var cellSpan = elCell.querySelector('span')
+
+  if (!clickedCell.isMine) {
+    console.log(clickedCell.minesAroundCount)
+  }
+
+  if (cellSpan.classList.contains('hidden')) {
+    cellSpan.classList.remove('hidden')
+  }
 
   // console.log('elCell:', elCell)
   if (elCell.innerText === '0') {
+    console.log('innerText 0')
+
     // if (elCell.classList.contains('occupied')) {
     // if (gBoard[cellI][cellJ] === LIFE) {
 
@@ -184,8 +200,8 @@ function onCellClicked(elCell, cellI, cellJ) {
     gBoard[cellI][cellJ].isShown = true
 
     //   // Update the Dom:
-    elCell.innerText = ''
-    console.log(elCell.innerText)
+    // elCell.innerText = ''
+    // console.log(elCell.innerText)
 
     // showCell(cellI, cellJ)/
   }
