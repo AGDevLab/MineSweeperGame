@@ -4,7 +4,13 @@
 
 var gBoard, numOfNegMines, mine, gIsWinner
 
-const MINE = '*'
+const MINE = '⊛'
+// const MARK = '<img src="assets/img/flag.png"/>'
+const MARK = '🏳️'
+const EMPTY = '▢'
+// ⁜※⁐▢▣◌●◯■◻■🏳️🏴🚩□■ŐÕŎʘ▢◌◍◉⊛⊘⊕⊗⨂
+
+// const PACMAN = '<img src="img/pacman.gif"/>'
 
 const gLevel = {
   size: 4,
@@ -136,7 +142,7 @@ function renderBoard(board) {
       } else if (!currCell.mine && currCell.minesAroundCount === 0) {
         console.log('empty')
 
-        strHTML += '_'
+        strHTML += EMPTY
       } else if (!currCell.mine && currCell.minesAroundCount) {
         strHTML += currCell.minesAroundCount
       }
@@ -220,7 +226,7 @@ function onCellClicked(elCell, cellI, cellJ) {
 
     gGame.score--
     // document.querySelector('h2 span').innerText = gGame.score
-    document.querySelector('h2 span').innerText = 'Game Over'
+    document.querySelector('h2 span').innerText = `${'Game Over'}`
 
     // if (elCell.classList.contains('occupied')) {
     // if (gBoard[cellI][cellJ] === LIFE) {
@@ -256,15 +262,19 @@ function onCellMarked(event, elCell) {
       if (gGame.markedCount < 4) {
         currCell.isMarked = true
         console.log('marked', elSpan, gBoard[cellCoord.i][cellCoord.j])
-        elSpan.textContent = 'M'
+        // elSpan.textContent = 'M'
+        console.log(elSpan)
+        elSpan.innerHTML = markFlagHTML()
         elSpan.classList.remove('hidden')
-        console.log(elCell)
+        console.log(elSpan)
 
         gGame.markedCount++
       }
     } else {
       currCell.isMarked = false
-      elSpan.textContent = currCell.minesAroundCount
+      currCell.minesAroundCount
+        ? (elSpan.textContent = currCell.minesAroundCount)
+        : (elSpan.textContent = EMPTY)
       elSpan.classList.add('hidden')
 
       console.log('unmarked', elSpan, gBoard[cellCoord.i][cellCoord.j])
@@ -300,3 +310,7 @@ at the Bonuses section below)
 */
 // TODO:
 function expandShown(board, elCell, i, j) {}
+
+function markFlagHTML() {
+  return `<div>${MARK}</div>`
+}

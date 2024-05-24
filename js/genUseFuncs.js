@@ -127,43 +127,43 @@ function toggleVisibility() {
 //   }
 // }
 
-function revealEmptyNeighbors(cellSpanParam, cellI, cellJ) {
-  console.log('startReveal')
-  var cellSpan = cellSpanParam
-  // Check bounds to avoid going out of the board
-  if (
-    cellI < 0 ||
-    cellI >= gBoard.length ||
-    cellJ < 0 ||
-    cellJ >= gBoard[cellI].length
-  ) {
-    return
-  }
+// function revealEmptyNeighbors(cellSpanParam, cellI, cellJ) {
+//   console.log('startReveal')
+//   var cellSpan = cellSpanParam
+//   // Check bounds to avoid going out of the board
+//   if (
+//     cellI < 0 ||
+//     cellI >= gBoard.length ||
+//     cellJ < 0 ||
+//     cellJ >= gBoard[cellI].length
+//   ) {
+//     return
+//   }
 
-  var clickedCell = gBoard[cellI][cellJ]
-  // var cellSpan = document.querySelector(
-  //   `[data-cell-i="${cellI}"][data-cell-j="${cellJ}"] span`
-  // ) // Use data attributes for better selection
+//   var clickedCell = gBoard[cellI][cellJ]
+//   // var cellSpan = document.querySelector(
+//   //   `[data-cell-i="${cellI}"][data-cell-j="${cellJ}"] span`
+//   // ) // Use data attributes for better selection
 
-  // if (!cellSpan || clickedCell.isShown) {
-  if (clickedCell.isShown) {
-    return // Avoid redundant checks and infinite recursion
-  }
+//   // if (!cellSpan || clickedCell.isShown) {
+//   if (clickedCell.isShown) {
+//     return // Avoid redundant checks and infinite recursion
+//   }
 
-  clickedCell.isShown = true
-  cellSpan.classList.remove('hidden')
-  gGame.shownCount++
+//   clickedCell.isShown = true
+//   cellSpan.classList.remove('hidden')
+//   gGame.shownCount++
 
-  if (clickedCell.minesAroundCount === 0) {
-    // Recursively call for neighbors in all directions (up, down, left, right, diagonals)
-    revealEmptyNeighbors(cellI - 1, cellJ)
-    revealEmptyNeighbors(cellI + 1, cellJ)
-    revealEmptyNeighbors(cellI, cellJ - 1)
-    revealEmptyNeighbors(cellI, cellJ + 1)
-    revealEmptyNeighbors(cellI - 1, cellJ - 1)
-    revealEmptyNeighbors(cellI - 1, cellJ + 1)
-    revealEmptyNeighbors(cellI + 1, cellJ - 1)
-    revealEmptyNeighbors(cellI + 1, cellJ + 1)
-  }
-  console.log('endReveal')
-}
+//   if (clickedCell.minesAroundCount === 0) {
+//     // Recursively call for neighbors in all directions (up, down, left, right, diagonals)
+//     revealEmptyNeighbors(cellI - 1, cellJ)
+//     revealEmptyNeighbors(cellI + 1, cellJ)
+//     revealEmptyNeighbors(cellI, cellJ - 1)
+//     revealEmptyNeighbors(cellI, cellJ + 1)
+//     revealEmptyNeighbors(cellI - 1, cellJ - 1)
+//     revealEmptyNeighbors(cellI - 1, cellJ + 1)
+//     revealEmptyNeighbors(cellI + 1, cellJ - 1)
+//     revealEmptyNeighbors(cellI + 1, cellJ + 1)
+//   }
+//   console.log('endReveal')
+// }
