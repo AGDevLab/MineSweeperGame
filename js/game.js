@@ -2,21 +2,22 @@
 
 // In Progress, Limited functionality
 
-var gBoard, numOfNegMines, mine
+var gBoard, numOfNegMines, mine, gIsWinner
 
 const MINE = '*'
 
 const gLevel = {
-  SIZE: 4,
-  MINES: 2,
+  size: 4,
+  mines: 2,
 }
 
 var gGame = {
   isOn: false,
-  shownCount: 0,
+  shownCount: 1,
   markedCount: 0,
   secsPassed: 0,
   score: 0,
+  minesHit: 0,
 }
 
 /* The Model:
@@ -70,15 +71,32 @@ function onInit() {
   gBoard = buildBoard()
   console.log('gBoard', gBoard)
   renderBoard(gBoard)
+  resetGameState()
+}
+
+function resetGameState() {
+  console.log('resetGameState')
+
+  // clearInterval(intervalId)
+  // intervalId = null
   document.querySelector('h2 span').innerText = 0
   gGame.score = 0
   gGame.markedCount = 0
+  gGame.shownCount = 1
+  gGame.minesHit = 0
+  // (gameBoardSize = 4), // Dynamic boardsize working
+  // (gameBoardFull = gameBoardSize ** 2),
+  // (timeCounter = 0),
+  // (counterElement.textContent = timeCounter)
+  // onInit()
 }
 
 // Builds the board Set the mines Call setMinesNegsCount() Return the created board
 // step1.1 done
 function buildBoard() {
-  const board = createMat(gLevel.SIZE, gLevel.SIZE)
+  console.log(gLevel.mines)
+
+  const board = createMat(gLevel.size, gLevel.size)
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[0].length; j++) {
       board[i][j] = {
@@ -90,10 +108,7 @@ function buildBoard() {
     }
   }
 
-  board[3][0].isMine = true
-  board[2][0].isMine = true
-
-  // addMine(board, gLevel.MINES)
+  addMine(board, gLevel.mines)
 
   return board
 }
@@ -139,20 +154,23 @@ function getClassName(location) {
 
 // Called when a cell is clicked
 function onCellClicked(elCell, cellI, cellJ) {
+  if (checkGameOver()) return
+  console.log(gIsWinner)
+
   console.log(elCell)
   var clickedCell = gBoard[cellI][cellJ]
   var cellSpan = elCell.querySelector('span')
 
   if (!cellSpan) {
-    console.error('cellSpan is null:', elCell)
-    return // Exit the function if cellSpan is null to avoid errors
+    // console.error('cellSpan is null:', elCell)
+    // return // Exit the function if cellSpan is null to avoid errors
   }
 
   if (!clickedCell.isMine) {
-    // console.log(clickedCell.minesAroundCount)
     if (cellSpan.classList.contains('hidden')) {
       cellSpan.classList.remove('hidden')
       clickedCell.isShown = true
+      gGame.shownCount++
     }
   }
   console.log(clickedCell)
@@ -160,6 +178,7 @@ function onCellClicked(elCell, cellI, cellJ) {
   if (clickedCell.isMine && !clickedCell.isShown) {
     clickedCell.isShown = true
     console.log('mine')
+    gGame.minesHit++
 
     gGame.score--
     document.querySelector('h2 span').innerText = gGame.score
@@ -187,10 +206,9 @@ function onCellMarked(event, elCell) {
   var elSpan = elCell.querySelector('span')
   // console.log(+elSpan.innerHTML)
   // console.log(elSpan.innerHTML)
-  console.log(elSpan.textContent)
+  // console.log(elSpan.textContent)
   // console.log(elCell.innerHTML)
   // console.log(elCell.textContent)
-  console.log(elCell)
 
   if (!currCell.isShown) {
     // console.log('Cell innerText before marking:', elCell.innerText)
@@ -209,8 +227,6 @@ function onCellMarked(event, elCell) {
       currCell.isMarked = false
       elSpan.textContent = currCell.minesAroundCount
       elSpan.classList.add('hidden')
-      // ? (elSpan.innerHTML = '')
-      // : (elSpan.innerText = currCell.minesAroundCount)
 
       console.log('unmarked', elSpan, gBoard[cellCoord.i][cellCoord.j])
       gGame.markedCount--
@@ -219,7 +235,22 @@ function onCellMarked(event, elCell) {
 }
 
 // TODO: Game ends when all mines are marked, and all the other cells are shown
-function checkGameOver() {}
+function checkGameOver() {
+  var gameOver = null
+  // console.log('test')
+
+  var winningState = gLevel.size ** 2 - gLevel.mines
+  console.log(winningState)
+  console.log(gGame.shownCount)
+
+  if (gGame.minesHit) {
+    gameOver = true
+  } else if (gGame.shownCount === winningState) {
+    gIsWinner = true
+    gameOver = true
+  }
+  return gameOver
+}
 
 /*
 When user clicks a cell with no mines around, we need to open not only that cell, but also its

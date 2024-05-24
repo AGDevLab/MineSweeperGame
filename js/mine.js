@@ -3,12 +3,12 @@ function addMine(board, mineCount) {
     console.log('mineAdded')
     // console.log(board[0][3])
     // random mines
-    for (var i = 0; i < gLevel.MINES; i++) {
+    for (var i = 0; i < gLevel.mines; i++) {
       var randCoordI = 0
       var randCoordJ = 0
       var randMineLoc
-      randCoordI = getRandomInt(0, gLevel.SIZE)
-      randCoordJ = getRandomInt(0, gLevel.SIZE)
+      randCoordI = getRandomInt(0, gLevel.size)
+      randCoordJ = getRandomInt(0, gLevel.size)
       // for (var j = 0; j < 2; j++) {}
       console.log(randCoordI, randCoordJ)
       // console.log(randCoord)

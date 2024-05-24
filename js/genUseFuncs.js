@@ -37,3 +37,40 @@ function getCellCoord(strCellId) {
   coord.j = +parts[2]
   return coord
 }
+
+function difficultyBtnChecker(btn) {
+  var tempSize = btn.getAttribute('data-boardSize')
+  var tempDiff = btn.getAttribute('data-mines')
+  console.log(btn.getAttribute('data-mines'))
+  console.log(tempSize)
+  console.log(tempDiff)
+  gLevel.size = tempSize
+  gLevel.mines = tempDiff
+
+  // gameBoardSize = tempSize
+  // gameBoardFull = gameBoardSize ** 2
+  onInit()
+  // resetGameState()
+  // return tempSize
+}
+
+function toggleVisibility() {
+  document.querySelector('.hidden').style.visibility = 'visible'
+  // var checkBoard = document.querySelector('.hidden')
+  // checkBoard.style.visibility = 'visible'
+}
+
+// function toggleVisibility() {
+//   // Get all elements with the class 'hidden'
+//   const hiddenElements = document.querySelectorAll('.hidden')
+//   console.log('test')
+
+//   // Loop through each element and toggle the visibility property
+//   hiddenElements.forEach((element) => {
+//     if (element.style.visibility === 'hidden') {
+//       element.style.visibility = 'visible'
+//     } else {
+//       element.style.visibility = 'hidden'
+//     }
+//   })
+// }
