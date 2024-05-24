@@ -54,6 +54,30 @@ function difficultyBtnChecker(btn) {
   // return tempSize
 }
 
+function isEmptyCell(coord) {
+  // return gBoard[coord.i][coord.j]  === ''
+  return !gBoard[coord.i][coord.j]
+}
+
+function getEmptyNegsAround(pieceCoord) {
+  // handle PAWN use isEmptyCell()
+  // var res = [{i:2,j:0},{i:3,j:0}]
+  var res = []
+
+  // var diff = isWhite ? -1 : 1
+  var nextCoord = { i: pieceCoord.i + diff, j: pieceCoord.j }
+  if (isEmptyCell(nextCoord)) res.push(nextCoord)
+  else return res
+
+  // if ((!isWhite && pieceCoord.i === 1) || (isWhite && pieceCoord.i === 6)) {
+  //   diff *= 2
+  //   nextCoord = { i: pieceCoord.i + diff, j: pieceCoord.j }
+  //   if (isEmptyCell(nextCoord)) res.push(nextCoord)
+  // }
+
+  return res
+}
+
 function toggleVisibility() {
   // Get all elements with the class 'hidden'
   const hiddenElements = document.querySelectorAll('.hidden')
@@ -76,34 +100,70 @@ function toggleVisibility() {
   })
 }
 
-// function toggleVisibility() {
-//   console.log('toggleVis')
+// function onCellClicked(elCell, cellI, cellJ) {
+//   if (checkGameOver()) return
 
-//   var checkVis = document.querySelector('.hidden')
-//   console.log(checkVis)
-//   console.log(checkVis.style.visibility)
+//   var clickedCell = gBoard[cellI][cellJ]
+//   var cellSpan = elCell.querySelector('span')
 
-//   if (checkVis.classList.contains('.hidden')) {
-//     checkVis.style.visibility = 'visible'
+//   if (!cellSpan) {
+//     return // Handle potential missing cellSpan element
+//   }
 
-//     console.log(checkVis.classList.contains('.hidden'))
+//   if (!clickedCell.isMine) {
+//     if (clickedCell.minesAroundCount === 0) {
+//       // Recursive function to reveal empty neighbors
+//       revealEmptyNeighbors(cellI, cellJ)
+//     } else if (clickedCell.minesAroundCount > 0) {
+//       console.log('numedCellTest')
+//       // Update UI to display the number of mines around (if not already shown)
+//       if (cellSpan.classList.contains('hidden')) {
+//         cellSpan.classList.remove('hidden')
+//         cellSpan.textContent = clickedCell.minesAroundCount // Display number
+//       }
+//     }
+//     clickedCell.isShown = true
+//     gGame.shownCount++
 //   }
 // }
 
-// function toggleVisibility() {
-//   // Get all elements with the class 'hidden'
-//   const hiddenElements = document.querySelectorAll('.hidden')
-//   console.log(hiddenElements)
+function revealEmptyNeighbors(cellSpanParam, cellI, cellJ) {
+  console.log('startReveal')
+  var cellSpan = cellSpanParam
+  // Check bounds to avoid going out of the board
+  if (
+    cellI < 0 ||
+    cellI >= gBoard.length ||
+    cellJ < 0 ||
+    cellJ >= gBoard[cellI].length
+  ) {
+    return
+  }
 
-//   // Loop through each element and toggle the visibility property
-//   hiddenElements.forEach((element) => {
-//     console.log(element)
-//     if (element.style.visibility === 'hidden') {
-//       element.style.visibility = 'visible'
-//     } else {
-//       console.log('test')
-//       console.log(element.style.visibility)
-//       element.style.visibility = 'hidden'
-//     }
-//   })
-// }
+  var clickedCell = gBoard[cellI][cellJ]
+  // var cellSpan = document.querySelector(
+  //   `[data-cell-i="${cellI}"][data-cell-j="${cellJ}"] span`
+  // ) // Use data attributes for better selection
+
+  // if (!cellSpan || clickedCell.isShown) {
+  if (clickedCell.isShown) {
+    return // Avoid redundant checks and infinite recursion
+  }
+
+  clickedCell.isShown = true
+  cellSpan.classList.remove('hidden')
+  gGame.shownCount++
+
+  if (clickedCell.minesAroundCount === 0) {
+    // Recursively call for neighbors in all directions (up, down, left, right, diagonals)
+    revealEmptyNeighbors(cellI - 1, cellJ)
+    revealEmptyNeighbors(cellI + 1, cellJ)
+    revealEmptyNeighbors(cellI, cellJ - 1)
+    revealEmptyNeighbors(cellI, cellJ + 1)
+    revealEmptyNeighbors(cellI - 1, cellJ - 1)
+    revealEmptyNeighbors(cellI - 1, cellJ + 1)
+    revealEmptyNeighbors(cellI + 1, cellJ - 1)
+    revealEmptyNeighbors(cellI + 1, cellJ + 1)
+  }
+  console.log('endReveal')
+}

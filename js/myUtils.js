@@ -209,7 +209,7 @@ function cellClicked(elCell) {
       break
     case PAWN_BLACK:
     case PAWN_WHITE:
-      possibleCoords = getAllPossibleCoordsPawn(cellCoord, piece === PAWN_WHITE)
+      possibleCoords = getEmptyNegsAround(cellCoord, piece === PAWN_WHITE)
       break
   }
   markCells(possibleCoords)
@@ -231,7 +231,7 @@ function isEmptyCell(coord) {
   return !gBoard[coord.i][coord.j]
 }
 
-function getAllPossibleCoordsPawn(pieceCoord, isWhite) {
+function getEmptyNegsAround(pieceCoord, isWhite) {
   // handle PAWN use isEmptyCell()
   // var res = [{i:2,j:0},{i:3,j:0}]
   var res = []

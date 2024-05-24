@@ -133,6 +133,10 @@ function renderBoard(board) {
 
       if (currCell.isMine) {
         strHTML += MINE
+      } else if (!currCell.mine && currCell.minesAroundCount === 0) {
+        console.log('empty')
+
+        strHTML += '_'
       } else if (!currCell.mine && currCell.minesAroundCount) {
         strHTML += currCell.minesAroundCount
       }
@@ -155,20 +159,56 @@ function getClassName(location) {
 // Called when a cell is clicked
 function onCellClicked(elCell, cellI, cellJ) {
   if (checkGameOver()) return
-  // console.log(gIsWinner)
+  console.log(gIsWinner)
 
   var clickedCell = gBoard[cellI][cellJ]
   var cellSpan = elCell.querySelector('span')
   console.log(cellSpan)
 
-  if (!cellSpan) {
+  if (!cellSpan || cellSpan.classList.contains('marked')) {
+    return
   }
 
   if (!clickedCell.isMine) {
-    if (cellSpan.classList.contains('hidden')) {
-      cellSpan.classList.remove('hidden')
-      clickedCell.isShown = true
-      gGame.shownCount++
+    if (clickedCell.minesAroundCount > 0) {
+      console.log('numedCellTest')
+      if (cellSpan.classList.contains('hidden')) {
+        console.log(cellSpan.textContent)
+        cellSpan.classList.remove('hidden')
+        cellSpan.classList.add('marked')
+        clickedCell.isShown = true
+        gGame.shownCount++
+      }
+    }
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+      if (i < 0 || i >= gBoard.length) continue
+      for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+        if (j < 0 || j >= gBoard[i].length) continue
+        // if (i === cellI && j === cellJ) continue
+
+        var neighborCell = gBoard[i][j]
+        var neighborCellEl = document.querySelector(`.cell-${i}-${j}`)
+        var neighborCellSpan = neighborCellEl
+          ? neighborCellEl.querySelector('span')
+          : null // Get the span of the neighbor cell
+
+        if (clickedCell.minesAroundCount === 0) {
+          //   console.log('emptyCellTest')
+          if (
+            neighborCellSpan &&
+            neighborCellSpan.classList.contains('hidden')
+          ) {
+            console.log('emptyCellTest')
+            console.log(neighborCellSpan)
+            console.log(neighborCellSpan.querySelector('.hidden'))
+            console.log(neighborCellSpan.textContent)
+            neighborCellSpan.classList.remove('hidden')
+            neighborCellSpan.classList.add('marked')
+            neighborCell.isShown = true
+            gGame.shownCount++
+          }
+        }
+      }
     }
   }
   console.log(clickedCell)
@@ -179,7 +219,8 @@ function onCellClicked(elCell, cellI, cellJ) {
     gGame.minesHit++
 
     gGame.score--
-    document.querySelector('h2 span').innerText = gGame.score
+    // document.querySelector('h2 span').innerText = gGame.score
+    document.querySelector('h2 span').innerText = 'Game Over'
 
     // if (elCell.classList.contains('occupied')) {
     // if (gBoard[cellI][cellJ] === LIFE) {
