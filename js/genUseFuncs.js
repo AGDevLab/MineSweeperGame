@@ -55,21 +55,54 @@ function difficultyBtnChecker(btn) {
 }
 
 function toggleVisibility() {
-  document.querySelector('.hidden').style.visibility = 'visible'
-  // var checkBoard = document.querySelector('.hidden')
-  // checkBoard.style.visibility = 'visible'
+  // Get all elements with the class 'hidden'
+  const hiddenElements = document.querySelectorAll('.hidden')
+
+  // Loop through each element and toggle the visibility property
+  // console.log(hiddenElements)
+  hiddenElements.forEach((element) => {
+    // console.log(element)
+
+    if (
+      element.style.visibility === 'hidden' ||
+      element.style.visibility === ''
+    ) {
+      // console.log(hiddenElements)
+      element.style.visibility = 'visible'
+    } else {
+      // console.log(hiddenElements)
+      element.style.visibility = 'hidden'
+    }
+  })
 }
+
+// function toggleVisibility() {
+//   console.log('toggleVis')
+
+//   var checkVis = document.querySelector('.hidden')
+//   console.log(checkVis)
+//   console.log(checkVis.style.visibility)
+
+//   if (checkVis.classList.contains('.hidden')) {
+//     checkVis.style.visibility = 'visible'
+
+//     console.log(checkVis.classList.contains('.hidden'))
+//   }
+// }
 
 // function toggleVisibility() {
 //   // Get all elements with the class 'hidden'
 //   const hiddenElements = document.querySelectorAll('.hidden')
-//   console.log('test')
+//   console.log(hiddenElements)
 
 //   // Loop through each element and toggle the visibility property
 //   hiddenElements.forEach((element) => {
+//     console.log(element)
 //     if (element.style.visibility === 'hidden') {
 //       element.style.visibility = 'visible'
 //     } else {
+//       console.log('test')
+//       console.log(element.style.visibility)
 //       element.style.visibility = 'hidden'
 //     }
 //   })

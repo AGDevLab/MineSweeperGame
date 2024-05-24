@@ -155,15 +155,13 @@ function getClassName(location) {
 // Called when a cell is clicked
 function onCellClicked(elCell, cellI, cellJ) {
   if (checkGameOver()) return
-  console.log(gIsWinner)
+  // console.log(gIsWinner)
 
-  console.log(elCell)
   var clickedCell = gBoard[cellI][cellJ]
   var cellSpan = elCell.querySelector('span')
+  console.log(cellSpan)
 
   if (!cellSpan) {
-    // console.error('cellSpan is null:', elCell)
-    // return // Exit the function if cellSpan is null to avoid errors
   }
 
   if (!clickedCell.isMine) {
