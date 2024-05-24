@@ -165,7 +165,7 @@ function onCellClicked(elCell, cellI, cellJ) {
   var cellSpan = elCell.querySelector('span')
   console.log(cellSpan)
 
-  if (!cellSpan || cellSpan.classList.contains('marked')) {
+  if (!cellSpan || clickedCell.isMarked) {
     return
   }
 
@@ -190,7 +190,7 @@ function onCellClicked(elCell, cellI, cellJ) {
         var neighborCellEl = document.querySelector(`.cell-${i}-${j}`)
         var neighborCellSpan = neighborCellEl
           ? neighborCellEl.querySelector('span')
-          : null // Get the span of the neighbor cell
+          : null
 
         if (clickedCell.minesAroundCount === 0) {
           //   console.log('emptyCellTest')
@@ -198,10 +198,10 @@ function onCellClicked(elCell, cellI, cellJ) {
             neighborCellSpan &&
             neighborCellSpan.classList.contains('hidden')
           ) {
-            console.log('emptyCellTest')
-            console.log(neighborCellSpan)
-            console.log(neighborCellSpan.querySelector('.hidden'))
-            console.log(neighborCellSpan.textContent)
+            // console.log('emptyCellTest')
+            // console.log(neighborCellSpan)
+            // console.log(neighborCellSpan.querySelector('.hidden'))
+            // console.log(neighborCellSpan.textContent)
             neighborCellSpan.classList.remove('hidden')
             neighborCellSpan.classList.add('marked')
             neighborCell.isShown = true
@@ -211,7 +211,7 @@ function onCellClicked(elCell, cellI, cellJ) {
       }
     }
   }
-  console.log(clickedCell)
+  // console.log(clickedCell)
 
   if (clickedCell.isMine && !clickedCell.isShown) {
     clickedCell.isShown = true
