@@ -3,6 +3,7 @@
 // In Progress, Limited functionality
 
 var gBoard, numOfNegMines, mine, gIsWinner
+// firstTurn = false
 
 const MINE = '⊛'
 // const MARK = '<img src="assets/img/flag.png"/>'
@@ -19,6 +20,7 @@ const gLevel = {
 
 var gGame = {
   isOn: false,
+  firstTurn: true,
   shownCount: 1,
   markedCount: 0,
   secsPassed: 0,
@@ -73,28 +75,31 @@ gGame = {
 
 // This is called when page loads
 function onInit() {
-  console.log('onInit')
   gBoard = buildBoard()
   console.log('gBoard', gBoard)
   renderBoard(gBoard)
+  // console.log(gGame.firstTurn)
   resetGameState()
 }
 
 function resetGameState() {
-  console.log('resetGameState')
+  if (gGame.firstTurn) {
+    console.log('resetGameState')
 
-  // clearInterval(intervalId)
-  // intervalId = null
-  document.querySelector('h2 span').innerText = 0
-  gGame.score = 0
-  gGame.markedCount = 0
-  gGame.shownCount = 1
-  gGame.minesHit = 0
-  // (gameBoardSize = 4), // Dynamic boardsize working
-  // (gameBoardFull = gameBoardSize ** 2),
-  // (timeCounter = 0),
-  // (counterElement.textContent = timeCounter)
-  // onInit()
+    // clearInterval(intervalId)
+    // intervalId = null
+    document.querySelector('h2 span').innerText = 0
+    gGame.score = 0
+    gGame.markedCount = 0
+    gGame.shownCount = 1
+    gGame.minesHit = 0
+    gGame.firstTurn = true
+    // (gameBoardSize = 4), // Dynamic boardsize working
+    // (gameBoardFull = gameBoardSize ** 2),
+    // (timeCounter = 0),
+    // (counterElement.textContent = timeCounter)
+    // onInit()
+  }
 }
 
 // Builds the board Set the mines Call setMinesNegsCount() Return the created board
@@ -113,10 +118,36 @@ function buildBoard() {
       }
     }
   }
+  // if (gGame.firstTurn) {
+  //   console.log('gGame.firstTurn')
+  //   firstClickTurn(board, gLevel.mines)
+  // }
+  // console.log(gGame.firstTurn)
 
-  addMine(board, gLevel.mines)
+  // addMine(board, gLevel.mines)
 
   return board
+}
+
+function firstClickTurn(board, mineCount) {
+  console.log(gGame.shownCount)
+  if (gGame.shownCount > 1) {
+    console.log('entered loop')
+
+    console.log('gGame.shownCount', gGame.shownCount)
+
+    addMine(board, mineCount)
+    gGame.firstTurn = false
+    renderBoard(board)
+    // return firstTurn
+  } else {
+    console.log('else')
+    gGame.shownCount++
+    // gGame.firstTurn = true
+    // onInit()
+    // // renderBoard()
+    // return false
+  }
 }
 
 // step1.3 done
@@ -126,6 +157,7 @@ function renderBoard(board) {
     strHTML += '<tr>'
     for (var j = 0; j < board[0].length; j++) {
       const currCell = board[i][j]
+
       numOfNegMines = setMinesNegsCount(i, j, board)
       currCell.minesAroundCount = numOfNegMines
       const tdId = `cell-${i}-${j}`
@@ -139,12 +171,17 @@ function renderBoard(board) {
 
       if (currCell.isMine) {
         strHTML += MINE
+      } else if (!currCell.mine) {
+        strHTML += EMPTY
       } else if (!currCell.mine && currCell.minesAroundCount === 0) {
         console.log('empty')
 
         strHTML += EMPTY
       } else if (!currCell.mine && currCell.minesAroundCount) {
         strHTML += currCell.minesAroundCount
+        // } else if (!currCell.mine) {
+        //   console.log('firstTurnTest')
+        //   strHTML += EMPTY
       }
 
       strHTML += '</span></td>'
@@ -175,6 +212,16 @@ function onCellClicked(elCell, cellI, cellJ) {
     return
   }
 
+  // if (gGame.firstTurn) {
+  //   if (clickedCell.isMine) {
+  //     relocateMine(cellI, cellJ)
+  //     setMinesNegsCount(gBoard)
+  //     renderBoard(gBoard) // Re-render the board to reflect the changes
+  //     clickedCell = gBoard[cellI][cellJ] // Update the reference to the clicked cell after relocating the mine
+  //   }
+  //   gGame.firstTurn = false
+  // }
+
   if (!clickedCell.isMine) {
     if (clickedCell.minesAroundCount > 0) {
       console.log('numedCellTest')
@@ -204,14 +251,18 @@ function onCellClicked(elCell, cellI, cellJ) {
             neighborCellSpan &&
             neighborCellSpan.classList.contains('hidden')
           ) {
-            // console.log('emptyCellTest')
-            // console.log(neighborCellSpan)
-            // console.log(neighborCellSpan.querySelector('.hidden'))
-            // console.log(neighborCellSpan.textContent)
+            console.log(gGame.firstTurn)
+            console.log(gGame.shownCount)
+
             neighborCellSpan.classList.remove('hidden')
             neighborCellSpan.classList.add('marked')
             neighborCell.isShown = true
-            gGame.shownCount++
+            if (gGame.firstTurn) {
+              console.log('gGame.firstTurn')
+              firstClickTurn(gBoard, gLevel.mines)
+            } else {
+              gGame.shownCount++
+            }
           }
         }
       }
@@ -310,6 +361,20 @@ at the Bonuses section below)
 */
 // TODO:
 function expandShown(board, elCell, i, j) {}
+
+function resetGame() {
+  // gCurrQuestIdx = 0
+  // document.querySelector('.button1').classList.remove('hidden')
+  // document.querySelector('.button2').classList.remove('hidden')
+  // onInit()
+  // document.querySelector('.restartBtn').style.display = 'none'
+  console.log('resetGame')
+
+  gGame.shownCount = 1
+  gGame.firstTurn = true
+  onInit()
+  // window.location.reload()
+}
 
 function markFlagHTML() {
   return `<div>${MARK}</div>`
