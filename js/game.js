@@ -7,6 +7,8 @@ var gBoard, numOfNegMines, mine, gIsWinner
 const MINE = '⊛'
 const MARK = '🏳️'
 const EMPTY = '▢'
+const SMILEY = ['😑', '😵', '😎']
+
 // const MARK = '<img src="assets/img/flag.png"/>'
 // ⁜※⁐▢▣◌●◯■◻■🏳️🏴🚩□■ŐÕŎʘ▢◌◍◉⊛⊘⊕⊗⨂
 
@@ -18,10 +20,10 @@ const gLevel = {
 var gGame = {
   isOn: false,
   firstTurn: true,
-  shownCount: 1,
+  shownCount: 0,
   markedCount: 0,
   secsPassed: 0,
-  score: 0,
+  lives: 3,
   minesHit: 0,
 }
 
@@ -75,19 +77,20 @@ function onInit() {
   gBoard = buildBoard()
   console.log('gBoard', gBoard)
   renderBoard(gBoard)
-  // console.log(gGame.firstTurn)
+  // console.log(document.querySelector('h2 .smiley').innerText)
   resetGameState()
 }
 
 function resetGameState() {
   if (gGame.firstTurn) {
-    console.log('resetGameState')
-    document.querySelector('h2 span').innerText = 0
-    gGame.score = 0
+    console.log('firstTurnState')
+    gGame.lives = 3
+    document.querySelector('h2 span').innerText = gGame.lives
     gGame.markedCount = 0
-    gGame.shownCount = 1
+    gGame.shownCount = 0
     gGame.minesHit = 0
     gGame.firstTurn = true
+    document.querySelector('h2 .smiley').innerText = SMILEY[0]
     // clearInterval(intervalId)
     // intervalId = null
     // (gameBoardSize = 4), // Dynamic boardsize working
@@ -100,8 +103,6 @@ function resetGameState() {
 // Builds the board Set the mines Call setMinesNegsCount() Return the created board
 // step1.1 done
 function buildBoard() {
-  console.log(gLevel.mines)
-
   const board = createMat(gLevel.size, gLevel.size)
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[0].length; j++) {
@@ -127,27 +128,19 @@ function buildBoard() {
 function firstClickTurn(board, mineCount, cellI, cellJ) {
   // console.log(gBoard[cellI][cellJ].isShown)
   // gBoard[cellI][cellJ].isShown = true
-  if (gGame.shownCount > 1) {
-    console.log('entered loop')
-
+  if (gGame.shownCount > 0) {
+    // console.log('entered loop')
     // console.log('gGame.shownCount', gGame.shownCount)
-
     addMine(board, mineCount)
     gGame.firstTurn = false
     renderBoard(board)
     // return firstTurn
   } else {
     console.log(gBoard[cellI][cellJ])
-
     gBoard[cellI][cellJ].isShown = true
-
     // console.log(gBoard[cellI][cellJ].isShown)
-    console.log('firstTurnElse')
+    // console.log('firstTurnElse')
     gGame.shownCount++
-    // gGame.firstTurn = true
-    // onInit()
-    // // renderBoard()
-    // return false
   }
 }
 
@@ -173,7 +166,7 @@ function renderBoard(board) {
       if (currCell.isMine) {
         strHTML += MINE
       } else if (!currCell.mine && currCell.minesAroundCount === 0) {
-        console.log('empty')
+        // console.log('empty')
         strHTML += EMPTY
       } else if (!currCell.mine && currCell.minesAroundCount) {
         strHTML += currCell.minesAroundCount
@@ -202,31 +195,18 @@ function getClassName(location) {
 // Called when a cell is clicked
 function onCellClicked(elCell, cellI, cellJ) {
   if (checkGameOver()) return
-  console.log(gIsWinner)
-
+  // console.log(gIsWinner)
   var clickedCell = gBoard[cellI][cellJ]
   var cellSpan = elCell.querySelector('span')
-  console.log(cellSpan)
-
   if (!cellSpan || clickedCell.isMarked) {
     return
   }
 
-  // if (gGame.firstTurn) {
-  //   if (clickedCell.isMine) {
-  //     relocateMine(cellI, cellJ)
-  //     setMinesNegsCount(gBoard)
-  //     renderBoard(gBoard) // Re-render the board to reflect the changes
-  //     clickedCell = gBoard[cellI][cellJ] // Update the reference to the clicked cell after relocating the mine
-  //   }
-  //   gGame.firstTurn = false
-  // }
-
   if (!clickedCell.isMine) {
     if (clickedCell.minesAroundCount > 0) {
-      console.log('numedCellTest')
+      // console.log('numedCellTest')
       if (cellSpan.classList.contains('hidden')) {
-        console.log(cellSpan.textContent)
+        // console.log(cellSpan.textContent)
         cellSpan.classList.remove('hidden')
         cellSpan.classList.add('marked')
         clickedCell.isShown = true
@@ -251,14 +231,11 @@ function onCellClicked(elCell, cellI, cellJ) {
             neighborCellSpan &&
             neighborCellSpan.classList.contains('hidden')
           ) {
-            // console.log(gGame.firstTurn)
-            // console.log(gGame.shownCount)
-
             neighborCellSpan.classList.remove('hidden')
             neighborCellSpan.classList.add('marked')
             neighborCell.isShown = true
             if (gGame.firstTurn) {
-              console.log('gGame.firstTurn')
+              // console.log('gGame.firstTurn')
               firstClickTurn(gBoard, gLevel.mines, cellI, cellJ)
             } else {
               gGame.shownCount++
@@ -275,9 +252,11 @@ function onCellClicked(elCell, cellI, cellJ) {
     console.log('mine')
     gGame.minesHit++
 
-    gGame.score--
-    // document.querySelector('h2 span').innerText = gGame.score
-    document.querySelector('h2 span').innerText = `${'Game Over'}`
+    gGame.lives--
+    document.querySelector('h2 span').innerText = gGame.lives
+    cellSpan.classList.remove('hidden')
+    cellSpan.classList.add('marked')
+    // document.querySelector('h2 span').innerText = `${'Game Over'}`
   }
 }
 
@@ -326,17 +305,18 @@ function onCellMarked(event, elCell) {
 // TODO: Game ends when all mines are marked, and all the other cells are shown
 function checkGameOver() {
   var gameOver = null
-  // console.log('test')
 
   var winningState = gLevel.size ** 2 - gLevel.mines
-  console.log(winningState)
-  console.log(gGame.shownCount)
+  // console.log(winningState)
+  // console.log(gGame.shownCount)
 
-  if (gGame.minesHit) {
+  if (gGame.lives === 0) {
     gameOver = true
+    document.querySelector('h2 .smiley').innerText = SMILEY[1]
   } else if (gGame.shownCount === winningState) {
     gIsWinner = true
     gameOver = true
+    document.querySelector('h2 .smiley').innerText = SMILEY[2]
   }
   return gameOver
 }
@@ -353,7 +333,7 @@ function expandShown(board, elCell, i, j) {}
 
 function resetGame() {
   console.log('resetGame')
-  gGame.shownCount = 1
+  gGame.shownCount = 0
   gGame.firstTurn = true
   onInit()
 
