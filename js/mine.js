@@ -38,35 +38,3 @@ function setMinesNegsCount(cellI, cellJ, board) {
   }
   return minesCount
 }
-
-function markFlagHTML() {
-  return `<div>${MARK}</div>`
-}
-
-// // Relocate mine from the clicked cell to another cell
-// function relocateMine(cell) {
-//   console.log('relocate')
-
-//   var emptyCells = []
-//   for (var i = 0; i < gBoard.length; i++) {
-//     for (var j = 0; j < gBoard[0].length; j++) {
-//       if (!gBoard[i][j].isMine && gBoard[i][j] !== cell) {
-//         emptyCells.push(gBoard[i][j])
-//       }
-//     }
-//   }
-//   var newMineCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
-//   newMineCell.isMine = true
-//   cell.isMine = false
-// }
-
-// // Update the mines count around cells
-// function updateMinesNegsCount() {
-//   console.log('updateMinesNegsCount')
-
-//   for (var i = 0; i < gBoard.length; i++) {
-//     for (var j = 0; j < gBoard[0].length; j++) {
-//       gBoard[i][j].minesAroundCount = setMinesNegsCount(i, j, gBoard)
-//     }
-//   }
-// }
