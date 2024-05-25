@@ -49,7 +49,7 @@ function difficultyBtnChecker(btn) {
 
   // gameBoardSize = tempSize
   // gameBoardFull = gameBoardSize ** 2
-  onInit()
+  resetGame()
   // resetGameState()
   // return tempSize
 }

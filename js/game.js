@@ -5,12 +5,10 @@
 var gBoard, numOfNegMines, mine, gIsWinner
 
 const MINE = '⊛'
-// const MARK = '<img src="assets/img/flag.png"/>'
 const MARK = '🏳️'
 const EMPTY = '▢'
+// const MARK = '<img src="assets/img/flag.png"/>'
 // ⁜※⁐▢▣◌●◯■◻■🏳️🏴🚩□■ŐÕŎʘ▢◌◍◉⊛⊘⊕⊗⨂
-
-// const PACMAN = '<img src="img/pacman.gif"/>'
 
 const gLevel = {
   size: 4,
@@ -19,6 +17,7 @@ const gLevel = {
 
 var gGame = {
   isOn: false,
+  firstTurn: true,
   shownCount: 1,
   markedCount: 0,
   secsPassed: 0,
@@ -73,28 +72,29 @@ gGame = {
 
 // This is called when page loads
 function onInit() {
-  console.log('onInit')
   gBoard = buildBoard()
   console.log('gBoard', gBoard)
   renderBoard(gBoard)
+  // console.log(gGame.firstTurn)
   resetGameState()
 }
 
 function resetGameState() {
-  console.log('resetGameState')
-
-  // clearInterval(intervalId)
-  // intervalId = null
-  document.querySelector('h2 span').innerText = 0
-  gGame.score = 0
-  gGame.markedCount = 0
-  gGame.shownCount = 1
-  gGame.minesHit = 0
-  // (gameBoardSize = 4), // Dynamic boardsize working
-  // (gameBoardFull = gameBoardSize ** 2),
-  // (timeCounter = 0),
-  // (counterElement.textContent = timeCounter)
-  // onInit()
+  if (gGame.firstTurn) {
+    console.log('resetGameState')
+    document.querySelector('h2 span').innerText = 0
+    gGame.score = 0
+    gGame.markedCount = 0
+    gGame.shownCount = 1
+    gGame.minesHit = 0
+    gGame.firstTurn = true
+    // clearInterval(intervalId)
+    // intervalId = null
+    // (gameBoardSize = 4), // Dynamic boardsize working
+    // (gameBoardFull = gameBoardSize ** 2),
+    // (timeCounter = 0),
+    // (counterElement.textContent = timeCounter)
+  }
 }
 
 // Builds the board Set the mines Call setMinesNegsCount() Return the created board
@@ -113,10 +113,42 @@ function buildBoard() {
       }
     }
   }
+  // if (gGame.firstTurn) {
+  //   console.log('gGame.firstTurn')
+  //   firstClickTurn(board, gLevel.mines)
+  // }
+  // console.log(gGame.firstTurn)
 
-  addMine(board, gLevel.mines)
+  // addMine(board, gLevel.mines)
 
   return board
+}
+
+function firstClickTurn(board, mineCount, cellI, cellJ) {
+  // console.log(gBoard[cellI][cellJ].isShown)
+  // gBoard[cellI][cellJ].isShown = true
+  if (gGame.shownCount > 1) {
+    console.log('entered loop')
+
+    // console.log('gGame.shownCount', gGame.shownCount)
+
+    addMine(board, mineCount)
+    gGame.firstTurn = false
+    renderBoard(board)
+    // return firstTurn
+  } else {
+    console.log(gBoard[cellI][cellJ])
+
+    gBoard[cellI][cellJ].isShown = true
+
+    // console.log(gBoard[cellI][cellJ].isShown)
+    console.log('firstTurnElse')
+    gGame.shownCount++
+    // gGame.firstTurn = true
+    // onInit()
+    // // renderBoard()
+    // return false
+  }
 }
 
 // step1.3 done
@@ -126,6 +158,7 @@ function renderBoard(board) {
     strHTML += '<tr>'
     for (var j = 0; j < board[0].length; j++) {
       const currCell = board[i][j]
+
       numOfNegMines = setMinesNegsCount(i, j, board)
       currCell.minesAroundCount = numOfNegMines
       const tdId = `cell-${i}-${j}`
@@ -141,10 +174,14 @@ function renderBoard(board) {
         strHTML += MINE
       } else if (!currCell.mine && currCell.minesAroundCount === 0) {
         console.log('empty')
-
         strHTML += EMPTY
       } else if (!currCell.mine && currCell.minesAroundCount) {
         strHTML += currCell.minesAroundCount
+      } else if (currCell.isShown) {
+        console.log('firstTurnTest')
+        strHTML += EMPTY
+      } else if (!currCell.mine) {
+        strHTML += EMPTY
       }
 
       strHTML += '</span></td>'
@@ -175,6 +212,16 @@ function onCellClicked(elCell, cellI, cellJ) {
     return
   }
 
+  // if (gGame.firstTurn) {
+  //   if (clickedCell.isMine) {
+  //     relocateMine(cellI, cellJ)
+  //     setMinesNegsCount(gBoard)
+  //     renderBoard(gBoard) // Re-render the board to reflect the changes
+  //     clickedCell = gBoard[cellI][cellJ] // Update the reference to the clicked cell after relocating the mine
+  //   }
+  //   gGame.firstTurn = false
+  // }
+
   if (!clickedCell.isMine) {
     if (clickedCell.minesAroundCount > 0) {
       console.log('numedCellTest')
@@ -204,14 +251,18 @@ function onCellClicked(elCell, cellI, cellJ) {
             neighborCellSpan &&
             neighborCellSpan.classList.contains('hidden')
           ) {
-            // console.log('emptyCellTest')
-            // console.log(neighborCellSpan)
-            // console.log(neighborCellSpan.querySelector('.hidden'))
-            // console.log(neighborCellSpan.textContent)
+            // console.log(gGame.firstTurn)
+            // console.log(gGame.shownCount)
+
             neighborCellSpan.classList.remove('hidden')
             neighborCellSpan.classList.add('marked')
             neighborCell.isShown = true
-            gGame.shownCount++
+            if (gGame.firstTurn) {
+              console.log('gGame.firstTurn')
+              firstClickTurn(gBoard, gLevel.mines, cellI, cellJ)
+            } else {
+              gGame.shownCount++
+            }
           }
         }
       }
@@ -227,17 +278,6 @@ function onCellClicked(elCell, cellI, cellJ) {
     gGame.score--
     // document.querySelector('h2 span').innerText = gGame.score
     document.querySelector('h2 span').innerText = `${'Game Over'}`
-
-    // if (elCell.classList.contains('occupied')) {
-    // if (gBoard[cellI][cellJ] === LIFE) {
-
-    //   // Update the Model:
-
-    //   // Update the Dom:
-    // elCell.innerText = ''
-    // console.log(elCell.innerText)
-
-    // showCell(cellI, cellJ)/
   }
 }
 
@@ -310,6 +350,20 @@ at the Bonuses section below)
 */
 // TODO:
 function expandShown(board, elCell, i, j) {}
+
+function resetGame() {
+  console.log('resetGame')
+  gGame.shownCount = 1
+  gGame.firstTurn = true
+  onInit()
+
+  // gCurrQuestIdx = 0
+  // document.querySelector('.button1').classList.remove('hidden')
+  // document.querySelector('.button2').classList.remove('hidden')
+  // onInit()
+  // document.querySelector('.restartBtn').style.display = 'none'
+  // window.location.reload()
+}
 
 function markFlagHTML() {
   return `<div>${MARK}</div>`
